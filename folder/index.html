@@ -1,0 +1,1419 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>C.A.R.E Vest</title>
+  <style>
+    :root {
+      --bg: #eef8fc;
+      --surface: #ffffff;
+      --surface-soft: #f5fbfe;
+      --ink: #00234f;
+      --text: #123b68;
+      --muted: #5f7890;
+      --line: #c8e8f5;
+      --navy: #003087;
+      --blue: #005eb8;
+      --aqua: #00a9ce;
+      --violet: #0072ce;
+      --red: #b42332;
+      --amber: #b85b00;
+      --green: #007a5e;
+      --ecg: #0072ce;
+      --shadow: 0 24px 56px rgba(0, 48, 135, 0.18);
+      --soft-shadow: 0 12px 30px rgba(0, 48, 135, 0.1);
+      font-family: Inter, Aptos, "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(118deg, rgba(255,255,255,0.78), transparent 30%),
+        linear-gradient(152deg, #f2fbff 0%, #dff5fc 32%, #ffffff 60%, #d7f0fb 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(115deg, rgba(0, 48, 135, 0.035) 0 1px, transparent 1px 18px);
+      mask-image: linear-gradient(#000, transparent 78%);
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .phone {
+      width: min(414px, calc(100vw - 48px));
+      height: min(896px, calc(100vh - 48px));
+      min-height: 760px;
+      background:
+        linear-gradient(165deg, rgba(255,255,255,0.6), transparent 36%),
+        linear-gradient(145deg, #f8fdff 0%, #e6f6fb 46%, #f4fbff 100%);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .statusbar {
+      height: 42px;
+      padding: 14px 22px 0;
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0;
+      z-index: 4;
+    }
+
+    main {
+      overflow: auto;
+      padding: 8px 18px 98px;
+      scrollbar-width: none;
+    }
+
+    main::-webkit-scrollbar { display: none; }
+
+    .screen {
+      display: none;
+      animation: enter 180ms ease;
+    }
+
+    .screen.active { display: block; }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      min-height: 326px;
+      border-radius: 28px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.13), transparent 36%),
+        linear-gradient(145deg, #003087 0%, #005eb8 38%, #0072ce 72%, #00a9ce 118%);
+      box-shadow: 0 22px 42px rgba(0, 48, 135, 0.28);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -52px;
+      top: -24px;
+      width: 240px;
+      height: 240px;
+      background:
+        repeating-radial-gradient(circle, rgba(255,255,255,0.13) 0 1px, transparent 1px 18px);
+      border-radius: 50%;
+      opacity: 0.64;
+    }
+
+    .hero-top,
+    .row-top,
+    .section-title,
+    .screen-head,
+    .detail,
+    .clinician {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.96);
+      color: var(--navy);
+      max-width: 126px;
+      font-weight: 850;
+      letter-spacing: 0;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 10px 24px rgba(0, 48, 135, 0.12);
+      white-space: nowrap;
+      transition: box-shadow 180ms ease, transform 180ms ease;
+    }
+
+    .brand:hover,
+    .brand:focus,
+    .brand.expanded,
+    .brand:focus-visible {
+      box-shadow: 0 14px 28px rgba(0, 48, 135, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .brand-full {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 9px);
+      width: min(304px, calc(100vw - 72px));
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.98);
+      color: var(--text);
+      box-shadow: 0 14px 34px rgba(0, 48, 135, 0.2);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      white-space: normal;
+      line-height: 1.25;
+      font-size: 0.78rem;
+      font-weight: 780;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .brand:hover .brand-full,
+    .brand:focus .brand-full,
+    .brand.expanded .brand-full,
+    .brand:focus-visible .brand-full {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.5), transparent 28%),
+        linear-gradient(135deg, #c5ecf8, #0072ce);
+      border: 3px solid rgba(255,255,255,0.72);
+      box-shadow: 0 10px 22px rgba(0, 48, 135, 0.16);
+      position: relative;
+      z-index: 1;
+      flex: 0 0 auto;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      margin-top: 30px;
+      max-width: 312px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255,255,255,0.76);
+      font-size: 0.72rem;
+      font-weight: 780;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #b9eef8;
+      box-shadow: 0 0 0 5px rgba(65, 182, 230, 0.18);
+    }
+
+    .hero h1 {
+      margin: 12px 0 6px;
+      font-size: clamp(2rem, 8.2vw, 2.55rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.82);
+      font-size: 0.9rem;
+      line-height: 1.42;
+    }
+
+    .event-panel {
+      position: relative;
+      z-index: 1;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      margin-top: auto;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.22);
+      backdrop-filter: blur(14px);
+    }
+
+    .chip {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.17);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .chip i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      display: block;
+    }
+
+    .event-time {
+      color: rgba(255,255,255,0.82);
+      font-size: 0.78rem;
+      font-weight: 760;
+      text-align: right;
+    }
+
+    .event-name {
+      display: block;
+      margin-top: 11px;
+      font-size: 1.24rem;
+      line-height: 1.1;
+      font-weight: 850;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .quick {
+      min-height: 78px;
+      padding: 9px 6px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(255,255,255,0.86);
+      color: #234052;
+      box-shadow: var(--soft-shadow);
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .quick.primary {
+      background: linear-gradient(145deg, #00a9ce, #005eb8);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .quick.alert {
+      color: var(--red);
+      background: #f1faff;
+    }
+
+    .quick svg,
+    .nav-btn svg,
+    .icon {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.25;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(220,233,239,0.92);
+      border-radius: 22px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--soft-shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .card.compact { padding: 14px; }
+
+    .section-title { margin-bottom: 12px; }
+
+    .section-title h2,
+    .screen-head h1 {
+      margin: 0;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .section-title h2 { font-size: 1.18rem; }
+    .screen-head { padding: 2px 2px 14px; }
+    .screen-head h1 { font-size: 1.72rem; }
+
+    .section-title span,
+    .screen-head p {
+      color: var(--muted);
+      font-weight: 720;
+      font-size: 0.78rem;
+      margin: 0;
+      text-align: right;
+    }
+
+    .screen-head p {
+      max-width: 190px;
+      line-height: 1.35;
+    }
+
+    .snippet {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 13px;
+      min-height: 102px;
+      padding: 13px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .snippet-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--red);
+      box-shadow: 0 12px 22px rgba(0, 114, 206, 0.2);
+    }
+
+    .snippet strong,
+    .row strong,
+    .profile-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1rem;
+      line-height: 1.22;
+      margin-bottom: 4px;
+    }
+
+    .snippet p,
+    .row p,
+    .profile-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.42;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      min-height: 50px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--navy);
+      font-weight: 820;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .btn.primary {
+      border-color: transparent;
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 12px 20px rgba(0, 48, 135, 0.18);
+    }
+
+    .btn.red {
+      border-color: transparent;
+      background: var(--red);
+      color: #fff;
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 88px;
+      padding: 13px;
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(65, 182, 230, 0.16), transparent 54%),
+        #fff;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 710;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      color: var(--navy);
+      font-size: clamp(1.1rem, 6vw, 1.48rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .clinician {
+      padding: 12px;
+      border-radius: 17px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .clinician-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .clinician-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: #eefaff;
+      color: var(--aqua);
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .clinician strong,
+    .clinician span {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .clinician strong { font-size: 0.95rem; }
+    .clinician span { color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+
+    .status-pill {
+      border-radius: 999px;
+      padding: 7px 9px;
+      background: #eefaff;
+      color: var(--green);
+      font-size: 0.7rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .live-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .live-meta .metric {
+      min-height: 78px;
+      border-radius: 17px;
+    }
+
+    .live-meta .metric strong {
+      font-size: clamp(1rem, 5vw, 1.22rem);
+    }
+
+    .strip {
+      height: 188px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #b9e6f5;
+      background:
+        linear-gradient(rgba(0, 94, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 94, 184, 0.12) 1px, transparent 1px),
+        linear-gradient(rgba(65, 182, 230, 0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(65, 182, 230, 0.09) 1px, transparent 1px),
+        #fbfeff;
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+      position: relative;
+    }
+
+    .strip.live-strip::before {
+      content: "";
+      position: absolute;
+      right: 13px;
+      top: 12px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ecg);
+      box-shadow: 0 0 0 0 rgba(0, 114, 206, 0.25);
+      animation: detectPulse 1.8s ease-out infinite;
+      z-index: 2;
+    }
+
+    .live-strip canvas {
+      width: 300%;
+      animation: ecgDrift 8s linear infinite;
+      will-change: transform;
+    }
+
+    .live-strip.paused canvas {
+      animation-play-state: paused;
+    }
+
+    @keyframes detectPulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 114, 206, 0.28); }
+      70% { box-shadow: 0 0 0 9px rgba(0, 114, 206, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 114, 206, 0); }
+    }
+
+    @keyframes ecgDrift {
+      from { transform: translateX(0); }
+      to { transform: translateX(-33.333%); }
+    }
+
+    .strip::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(255,255,255,0.22), transparent 12%, transparent 88%, rgba(255,255,255,0.22));
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .explain {
+      margin-top: 12px;
+      padding: 13px;
+      border-radius: 16px;
+      background: #f5fbfe;
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr) auto;
+      gap: 11px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .row:last-child { border-bottom: 0; }
+
+    .time {
+      color: var(--blue);
+      font-size: 0.8rem;
+      font-weight: 840;
+      width: 56px;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 6px 8px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      min-height: 38px;
+      border-radius: 13px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 820;
+    }
+
+    .tab.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 13px;
+      align-items: center;
+    }
+
+    .profile-card .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 21px;
+      border: 0;
+    }
+
+    .detail {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+
+    .detail:last-child { border-bottom: 0; }
+    .detail strong { margin: 0; }
+    .detail span {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 760;
+      text-align: right;
+      max-width: 170px;
+      line-height: 1.35;
+    }
+
+    nav {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      height: 72px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border-radius: 24px;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(220,233,239,0.92);
+      box-shadow: 0 14px 34px rgba(0, 48, 135, 0.17);
+      z-index: 5;
+      backdrop-filter: blur(15px);
+    }
+
+    .nav-btn {
+      min-width: 0;
+      background: transparent;
+      color: #6b8195;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 4px;
+      font-size: 0.66rem;
+      font-weight: 820;
+    }
+
+    .nav-btn.active { color: var(--blue); }
+
+    .nav-btn.active svg {
+      stroke-width: 2.5;
+    }
+
+    dialog {
+      width: min(344px, calc(100% - 32px));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 0;
+      box-shadow: var(--shadow);
+      color: var(--ink);
+    }
+
+    dialog::backdrop { background: rgba(0, 48, 135, 0.28); }
+
+    .dialog-head {
+      padding: 17px 16px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dialog-head h2 { margin: 0; font-size: 1.15rem; }
+
+    .dialog-body {
+      padding: 14px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .symptom {
+      min-height: 46px;
+      border-radius: 14px;
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-weight: 800;
+      text-align: left;
+      padding: 10px 12px;
+    }
+
+    .toast {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 98px;
+      z-index: 6;
+      padding: 13px 14px;
+      border-radius: 17px;
+      background: #003087;
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(0, 48, 135, 0.24);
+      font-size: 0.86rem;
+      line-height: 1.35;
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 170ms ease, transform 170ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 460px) {
+      body {
+        padding: 0;
+        background: var(--bg);
+      }
+
+      body::before { display: none; }
+
+      .phone {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        border-radius: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      main { padding-inline: 16px; }
+      .hero { border-radius: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="statusbar">
+      <span>9:41</span>
+      <span id="statusBattery">Vest 82%</span>
+    </div>
+
+    <main>
+      <section id="home" class="screen active">
+        <div class="hero">
+          <div class="hero-top">
+            <div class="brand" tabindex="0" aria-label="C.A.R.E Vest, Cardiac Arrhythmia Recognition and Evaluation">
+              <span>C.A.R.E Vest</span>
+              <span class="brand-full">Cardiac Arrhythmia Recognition &amp; Evaluation</span>
+            </div>
+            <div class="avatar" aria-hidden="true"></div>
+          </div>
+          <div class="hero-copy">
+            <span class="eyebrow"><span class="dot"></span>Live monitoring</span>
+            <h1 id="greeting">Hi Margaret</h1>
+            <p id="subhead">Your vest is connected and watching for changes.</p>
+          </div>
+          <div class="event-panel">
+            <div class="row-top">
+              <span id="priorityChip" class="chip"><i></i>HIGH PRIORITY</span>
+              <span id="eventTime" class="event-time">Last event 23:11</span>
+            </div>
+            <span id="eventName" class="event-name">Atrial fibrillation</span>
+          </div>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick primary" data-go="live" aria-label="Open ECG">
+            <svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+            ECG
+          </button>
+          <button class="quick" data-go="insights" aria-label="Open clinical notes">
+            <svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M8 17V9"/><path d="M12 17V7"/><path d="M16 17v-5"/><path d="M20 17v-2"/></svg>
+            Notes
+          </button>
+          <button class="quick" data-go="history" aria-label="Open history">
+            <svg viewBox="0 0 24 24"><path d="M12 8v5l3 2"/><path d="M3.1 11a9 9 0 1 1 2.6 7"/></svg>
+            History
+          </button>
+          <button class="quick alert" data-go="profile" aria-label="Open support">
+            <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3"/></svg>
+            Help
+          </button>
+        </div>
+
+        <article class="card">
+          <div class="section-title">
+            <h2>Latest rhythm event</h2>
+            <span id="lastEventDate">20 Jun 2026</span>
+          </div>
+          <div class="snippet">
+            <div id="snippetIcon" class="snippet-icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+            </div>
+            <div>
+              <strong id="snippetTitle">AFib recorded at 23:11</strong>
+              <p id="snippetText">Irregular rhythm detected and saved for review.</p>
+            </div>
+          </div>
+          <div class="actions">
+            <button id="reportBtn" class="btn primary">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg>
+              Email report
+            </button>
+            <button class="btn" data-go="insights">Review details</button>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="section-title">
+            <h2>Today</h2>
+            <span id="monitoringHours">7h 42m monitored</span>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span>Current rate</span><strong id="currentRate">118 bpm</strong></div>
+            <div class="metric"><span>Vest signal</span><strong id="signalQuality">Good</strong></div>
+            <div class="metric"><span>Rhythm events</span><strong id="eventCount">1</strong></div>
+            <div class="metric"><span>Battery</span><strong id="battery">82%</strong></div>
+          </div>
+        </article>
+
+        <article class="card compact">
+          <div class="clinician">
+            <div class="clinician-left">
+              <div class="clinician-avatar">AP</div>
+              <div>
+                <strong>Dr Aisha Patel</strong>
+                <span>Healthcare professional</span>
+              </div>
+            </div>
+            <span class="status-pill">Linked</span>
+          </div>
+        </article>
+      </section>
+
+      <section id="live" class="screen">
+        <div class="screen-head">
+          <h1>Live ECG</h1>
+          <p id="liveSubhead">Irregular rhythm under observation.</p>
+        </div>
+        <div class="live-meta">
+          <div class="metric"><span>Rate</span><strong id="liveRate">118 bpm</strong></div>
+          <div class="metric"><span>Rhythm</span><strong id="liveRhythm">AFib</strong></div>
+          <div class="metric"><span>Status</span><strong id="detectingStatus">Detecting ECG</strong></div>
+        </div>
+        <article class="card">
+          <div class="strip live-strip"><canvas id="ecg" aria-label="Live ECG waveform"></canvas></div>
+          <div class="actions">
+            <button id="pauseBtn" class="btn primary">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14"/><path d="M16 5v14"/></svg>
+              Pause
+            </button>
+            <button id="symptomBtn" class="btn">Log symptom</button>
+          </div>
+        </article>
+        <article class="card">
+          <div class="section-title"><h2>Markers</h2><span>Patient logs</span></div>
+          <div id="markers"></div>
+        </article>
+      </section>
+
+      <section id="insights" class="screen">
+        <div class="screen-head">
+          <h1>Clinical notes</h1>
+          <p>Clear summary for you and your clinician.</p>
+        </div>
+        <article class="card">
+          <div class="section-title"><h2 id="noteTitle">Atrial fibrillation</h2><span id="confidence">92% match</span></div>
+          <div class="strip"><canvas id="noteEcg" aria-label="Event ECG strip"></canvas></div>
+          <div id="detailRows"></div>
+        </article>
+      </section>
+
+      <section id="history" class="screen">
+        <div class="screen-head">
+          <h1>History</h1>
+          <p>Events, symptoms, snapshots, and vest alerts.</p>
+        </div>
+        <div class="tabs">
+          <button class="tab active">Day</button>
+          <button class="tab">Week</button>
+          <button class="tab">Month</button>
+          <button class="tab">Custom</button>
+        </div>
+        <article class="card">
+          <div id="historyRows"></div>
+        </article>
+      </section>
+
+      <section id="profile" class="screen">
+        <div class="screen-head">
+          <h1>Profile</h1>
+          <p>Emergency and clinician details.</p>
+        </div>
+        <article class="card profile-card">
+          <div class="avatar" aria-hidden="true"></div>
+          <div>
+            <strong>Margaret Wilson</strong>
+            <p>Age 68 | Patient ref. CV-2048</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="section-title"><h2>Care team</h2><span id="lastProfileEvent">Last event 23:11</span></div>
+          <div class="detail"><strong>Contact</strong><span>Alan Wilson</span></div>
+          <div class="detail"><strong>Condition</strong><span id="profileCondition">AFib risk</span></div>
+          <div class="detail"><strong>Medication</strong><span>Bisoprolol</span></div>
+          <div class="detail"><strong>Clinician</strong><span>Dr Aisha Patel</span></div>
+          <button class="btn red">Call emergency services</button>
+        </article>
+      </section>
+    </main>
+
+    <nav aria-label="Primary navigation">
+      <button class="nav-btn active" data-go="home">
+        <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+        Home
+      </button>
+      <button class="nav-btn" data-go="live">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+        Live
+      </button>
+      <button class="nav-btn" data-go="insights">
+        <svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M8 17V9"/><path d="M12 17V7"/><path d="M16 17v-5"/><path d="M20 17v-2"/></svg>
+        Notes
+      </button>
+      <button class="nav-btn" data-go="history">
+        <svg viewBox="0 0 24 24"><path d="M12 8v5l3 2"/><path d="M3.1 11a9 9 0 1 1 2.6 7"/></svg>
+        History
+      </button>
+      <button class="nav-btn" data-go="profile">
+        <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </button>
+    </nav>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <dialog id="dialog">
+    <div class="dialog-head"><h2>Log symptom</h2></div>
+    <div class="dialog-body">
+      <button class="symptom">Chest pain</button>
+      <button class="symptom">Palpitations</button>
+      <button class="symptom">Dizziness</button>
+      <button class="symptom">Shortness of breath</button>
+      <button class="symptom">Fatigue</button>
+      <button class="symptom">Other</button>
+      <button id="closeDialog" class="btn">Close</button>
+    </div>
+  </dialog>
+
+  <script>
+    const conditions = [
+      {
+        key: "afib",
+        name: "Atrial fibrillation",
+        short: "AFib",
+        priority: "HIGH PRIORITY",
+        color: "#003087",
+        rate: [86, 112],
+        confidence: 92,
+        summary: "Irregular rhythm detected and saved for clinician review.",
+        evidence: "Beat spacing varied for more than two minutes without a consistent repeating pattern.",
+        explanation: "The spacing between beats is irregularly irregular. This can happen with atrial fibrillation and should be reviewed by your clinician.",
+        rows: [
+          ["Rhythm pattern", "Beat spacing varies from one beat to the next."],
+          ["Symptoms to note", "Palpitations, breathlessness, dizziness, or chest discomfort."],
+          ["Next step", "Share the report if this is new, prolonged, or linked with symptoms."]
+        ],
+        pattern: "irregular"
+      },
+      {
+        key: "tachy",
+        name: "Tachycardia",
+        short: "Fast rhythm",
+        priority: "MEDIUM PRIORITY",
+        color: "#005EB8",
+        rate: [104, 136],
+        confidence: 88,
+        summary: "Heart rate stayed above the expected resting range.",
+        evidence: "Rate stayed above the patient's resting baseline while the rhythm remained otherwise regular.",
+        explanation: "The ECG shows a faster rhythm. This can be caused by activity, stress, infection, dehydration, medication, or a rhythm problem.",
+        rows: [
+          ["Rhythm pattern", "Beats are regular, but closer together than expected."],
+          ["Symptoms to note", "Fluttering, light-headedness, breathlessness, or fatigue."],
+          ["Next step", "Rest, recheck symptoms, and share the recording if it persists."]
+        ],
+        pattern: "fast"
+      },
+      {
+        key: "brady",
+        name: "Bradycardia",
+        short: "Slow rhythm",
+        priority: "MEDIUM PRIORITY",
+        color: "#0072CE",
+        rate: [48, 58],
+        confidence: 86,
+        summary: "Heart rate dropped below the usual resting threshold.",
+        evidence: "Rate fell below the patient's usual resting range during a quiet monitoring period.",
+        explanation: "The ECG shows a slower rhythm. Some people have a naturally slow pulse, but symptoms such as faintness or chest pain need urgent advice.",
+        rows: [
+          ["Rhythm pattern", "Beats are regular, with longer gaps between them."],
+          ["Symptoms to note", "Faintness, unusual tiredness, confusion, or chest pain."],
+          ["Next step", "Review medication timing and forward the report if symptomatic."]
+        ],
+        pattern: "slow"
+      },
+      {
+        key: "premature",
+        name: "Premature beats",
+        short: "Extra beats",
+        priority: "LOW PRIORITY",
+        color: "#00A9CE",
+        rate: [68, 88],
+        confidence: 84,
+        summary: "An early beat interrupted an otherwise steady rhythm.",
+        evidence: "One beat arrived early, followed by a short settling pause before the rhythm returned to baseline.",
+        explanation: "The ECG shows occasional early beats. These are common, but patterns, frequency, and symptoms help decide whether review is needed.",
+        rows: [
+          ["Rhythm pattern", "Mostly regular, with occasional early beats and a pause."],
+          ["Symptoms to note", "Skipped beat feeling, brief thump, or flutter."],
+          ["Next step", "Keep logging symptoms so your clinician can compare timing."]
+        ],
+        pattern: "ectopic"
+      },
+      {
+        key: "normal",
+        name: "Normal sinus rhythm",
+        short: "Normal",
+        priority: "ROUTINE",
+        color: "#41B6E6",
+        rate: [62, 78],
+        confidence: 95,
+        summary: "No significant rhythm abnormality was detected.",
+        evidence: "Beat spacing, rate, and signal quality stayed within the patient's expected range.",
+        explanation: "The ECG shows a steady rhythm with regular spacing. The vest will continue monitoring and save any future changes.",
+        rows: [
+          ["Rhythm pattern", "Regular beat spacing with a stable resting rate."],
+          ["Symptoms to note", "Log symptoms even if the ECG looks normal."],
+          ["Next step", "Continue wearing the vest as directed."]
+        ],
+        pattern: "normal"
+      }
+    ];
+
+    const random = (min, max) => Math.floor(min + Math.random() * (max - min + 1));
+    const pad = value => String(value).padStart(2, "0");
+    const condition = conditions[random(0, conditions.length - 1)];
+    const rateValue = random(condition.rate[0], condition.rate[1]);
+    const eventHour = random(6, 23);
+    const eventMinute = random(0, 59);
+    const dateDay = random(18, 25);
+    const eventTime = `${pad(eventHour)}:${pad(eventMinute)}`;
+    const eventDate = `${dateDay} Jun 2026`;
+    const signal = ["Good", "Excellent", "Stable"][random(0, 2)];
+    const events = condition.key === "normal" ? random(0, 1) : random(1, 4);
+    const monitoring = `${random(7, 12)}h ${random(8, 58)}m monitored`;
+    const batteryValue = random(54, 96);
+    let paused = false;
+    let toastTimer;
+    let scrollOffset = 0;
+    let lastDrawKey = "";
+
+    const el = id => document.getElementById(id);
+    const screens = [...document.querySelectorAll(".screen")];
+    const navButtons = [...document.querySelectorAll(".nav-btn")];
+    const liveCanvas = el("ecg");
+    const noteCanvas = el("noteEcg");
+
+    function setText(id, text) {
+      el(id).textContent = text;
+    }
+
+    function showToast(message) {
+      const toast = el("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 3600);
+    }
+
+    function showScreen(id) {
+      screens.forEach(screen => screen.classList.toggle("active", screen.id === id));
+      navButtons.forEach(button => button.classList.toggle("active", button.dataset.go === id));
+      document.querySelector("main").scrollTop = 0;
+      if (id === "live") {
+        lastDrawKey = "";
+        drawTrace(liveCanvas);
+      }
+      if (id === "insights") drawEventStrip();
+    }
+
+    document.querySelectorAll("[data-go]").forEach(button => {
+      button.addEventListener("click", () => showScreen(button.dataset.go));
+    });
+
+    document.querySelector(".brand").addEventListener("click", event => {
+      event.currentTarget.classList.toggle("expanded");
+    });
+
+    function applyCondition() {
+      setText("statusBattery", `Vest ${batteryValue}%`);
+      setText("subhead", `${condition.short} event recorded by C.A.R.E Vest.`);
+      el("priorityChip").innerHTML = `<i></i>${condition.priority}`;
+      setText("eventTime", `Last event ${eventTime}`);
+      setText("eventName", condition.name);
+      setText("lastEventDate", eventDate);
+      setText("snippetTitle", `${condition.short} recorded at ${eventTime}`);
+      setText("snippetText", condition.evidence);
+      setText("monitoringHours", monitoring);
+      setText("currentRate", `${rateValue} bpm`);
+      setText("signalQuality", signal);
+      setText("eventCount", String(events));
+      setText("battery", `${batteryValue}%`);
+      setText("liveRate", `${rateValue} bpm`);
+      setText("liveRhythm", condition.short);
+      setText("liveSubhead", condition.summary);
+      setText("noteTitle", condition.name);
+      setText("confidence", `${condition.confidence}% match`);
+      setText("profileCondition", condition.name);
+      setText("lastProfileEvent", `Last event ${eventTime}`);
+      el("snippetIcon").style.background = condition.color;
+      el("snippetIcon").style.boxShadow = `0 12px 22px ${condition.color}33`;
+      document.documentElement.style.setProperty("--blue", condition.key === "normal" ? "#0072CE" : "#005EB8");
+
+      el("detailRows").innerHTML = [
+        ["Why it was flagged", condition.evidence],
+        ...condition.rows
+      ].map(row => `<div class="row"><span class="time">Info</span><div><strong>${row[0]}</strong><p>${row[1]}</p></div><span></span></div>`).join("");
+
+      el("historyRows").innerHTML = [
+        [eventTime, condition.name, condition.summary, condition.priority.split(" ")[0]],
+        [`${pad(Math.max(0, eventHour - 1))}:${pad(random(0, 59))}`, "Symptom log", "Patient marker saved near the event.", "Log"],
+        [`${pad(Math.max(0, eventHour - 2))}:${pad(random(0, 59))}`, "Vest check", `${signal} signal, electrodes in contact.`, "Vest"],
+        [`${pad(Math.max(0, eventHour - 4))}:${pad(random(0, 59))}`, "Baseline sample", "Routine rhythm strip stored for comparison.", "ECG"]
+      ].map(row => `<div class="row"><span class="time">${row[0]}</span><div><strong>${row[1]}</strong><p>${row[2]}</p></div><span class="badge">${row[3]}</span></div>`).join("");
+
+      el("markers").innerHTML = `<div class="row"><span class="time">${eventTime}</span><div><strong>${condition.short}</strong><p>Event marker added automatically.</p></div><span class="badge">Event</span></div>`;
+    }
+
+    function canvasSize(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const scale = Math.max(1, window.devicePixelRatio || 1);
+      const width = Math.round(rect.width * scale);
+      const height = Math.round(rect.height * scale);
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function beatInterval(index) {
+      if (condition.pattern === "fast") return 52;
+      if (condition.pattern === "slow") return 112;
+      if (condition.pattern === "irregular") {
+        const rr = [64, 93, 56, 82, 71, 105, 58, 86, 62, 98, 53, 76];
+        return rr[((index % rr.length) + rr.length) % rr.length];
+      }
+      if (condition.pattern === "ectopic" && index % 5 === 3) return 46;
+      if (condition.pattern === "ectopic" && index % 5 === 4) return 96;
+      return 78;
+    }
+
+    function morphology(t, beatIndex) {
+      const gaussian = (center, width, amplitude) => amplitude * Math.exp(-0.5 * Math.pow((t - center) / width, 2));
+      let y =
+        gaussian(0.13, 0.028, -5) +
+        gaussian(0.22, 0.012, 12) +
+        gaussian(0.245, 0.009, -46) +
+        gaussian(0.27, 0.014, 18) +
+        gaussian(0.56, 0.075, -10);
+
+      if (condition.pattern === "irregular") {
+        y += Math.sin((beatIndex * 2.13) + t * 22) * 1.6;
+        if (beatIndex % 4 === 1) y *= 0.88;
+        if (beatIndex % 5 === 2) y *= 1.08;
+      }
+
+      if (condition.pattern === "ectopic" && beatIndex % 5 === 3) {
+        y =
+          gaussian(0.18, 0.015, 9) +
+          gaussian(0.225, 0.012, -58) +
+          gaussian(0.255, 0.018, 22) +
+          gaussian(0.48, 0.09, -5);
+      }
+
+      return y;
+    }
+
+    function ecgValueAt(x) {
+      let cursor = -scrollOffset;
+      let beatIndex = Math.floor(scrollOffset / 78);
+      while (cursor + beatInterval(beatIndex) < x) {
+        cursor += beatInterval(beatIndex);
+        beatIndex += 1;
+      }
+      const interval = beatInterval(beatIndex);
+      const t = Math.max(0, Math.min(1, (x - cursor) / interval));
+      const drift = Math.sin((x + scrollOffset) / 145) * 2.2;
+      const muscle = Math.sin((x + scrollOffset) / 8.5) * 0.45 + Math.sin((x + scrollOffset) / 3.9) * 0.2;
+      return morphology(t, beatIndex) + drift + muscle;
+    }
+
+    function drawGrid(ctx, width, height) {
+      ctx.fillStyle = "#fbfeff";
+      ctx.fillRect(0, 0, width, height);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(65, 182, 230, 0.09)";
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 12) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let y = 0; y <= height; y += 12) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(0, 94, 184, 0.14)";
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 60) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let y = 0; y <= height; y += 60) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+    }
+
+    function drawTrace(canvas) {
+      const { ctx, width, height } = canvasSize(canvas);
+      if (!width || !height) return;
+      const drawKey = `${canvas.id}:${width}:${height}:${condition.key}:${scrollOffset.toFixed(1)}`;
+      if (drawKey === lastDrawKey && canvas.id === "ecg") return;
+      if (canvas.id === "ecg") lastDrawKey = drawKey;
+      const baseline = height * 0.54;
+      drawGrid(ctx, width, height);
+
+      ctx.save();
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#0072CE";
+      ctx.lineWidth = 2.05;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += 1.4) {
+        const y = baseline + ecgValueAt(x);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawEventStrip() {
+      drawTrace(noteCanvas);
+    }
+
+    setInterval(() => {
+      if (paused) return;
+      const seconds = Math.floor(Date.now() / 1000);
+      setText("liveRate", `${rateValue + Math.round(Math.sin(seconds / 6) * 3)} bpm`);
+    }, 1000);
+
+    el("pauseBtn").addEventListener("click", () => {
+      paused = !paused;
+      el("pauseBtn").innerHTML = paused
+        ? `<svg class="icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg>Resume`
+        : `<svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14"/><path d="M16 5v14"/></svg>Pause`;
+      document.querySelector(".live-strip").classList.toggle("paused", paused);
+      if (!paused) drawTrace(liveCanvas);
+    });
+
+    el("symptomBtn").addEventListener("click", () => el("dialog").showModal());
+    el("closeDialog").addEventListener("click", () => el("dialog").close());
+    document.querySelectorAll(".symptom").forEach(button => {
+      button.addEventListener("click", () => {
+        const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        el("markers").insertAdjacentHTML("afterbegin", `<div class="row"><span class="time">${time}</span><div><strong>${button.textContent}</strong><p>Patient symptom marker saved.</p></div><span class="badge">Log</span></div>`);
+        el("dialog").close();
+        showToast(`${button.textContent} saved to the event timeline.`);
+      });
+    });
+
+    el("reportBtn").addEventListener("click", () => {
+      const message = "Your report was emailed to your healthcare professional.";
+      window.alert(message);
+      showToast(message);
+    });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
+        tab.classList.add("active");
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      lastDrawKey = "";
+      drawTrace(liveCanvas);
+      drawEventStrip();
+    });
+
+    applyCondition();
+    drawTrace(liveCanvas);
+    drawEventStrip();
+  </script>
+</body>
+</html>
